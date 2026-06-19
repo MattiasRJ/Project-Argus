@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Argus Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: #0a0a0f;
+            color: #e0e0e0;
+            padding: 28px 32px;
+            min-height: 100vh;
+        }
+
+        .dashboard-title {
+            font-family: 'Share Tech Mono', monospace;
+            color: #00ff88;
+            font-size: 28px;
+            letter-spacing: 6px;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #444;
+            letter-spacing: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            margin-bottom: 20px;
+        }
+
+        hr { border: none; border-top: 1px solid #1a2a1a; margin-bottom: 24px; }
+
+        /* STATUS CARD */
+        .status-card {
+            background: #0f1a0f;
+            border: 1px solid #1a3a1a;
+            border-left: 3px solid #00ff88;
+            border-radius: 8px;
+            padding: 16px 24px;
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .status-item {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .status-item span {
+            color: #00ff88;
+            font-weight: 600;
+        }
+
+        /* MAIN LAYOUT */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+            align-items: start;
+        }
+
+        /* METRICS PANEL */
+        .metrics-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .metric-card {
+            background: #0f0f18;
+            border: 1px solid #1e1e30;
+            border-radius: 8px;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-card.critical { border-left: 3px solid #ff2222; }
+        .metric-card.high     { border-left: 3px solid #ff6600; }
+        .metric-card.medium   { border-left: 3px solid #ffaa00; }
+        .metric-card.low      { border-left: 3px solid #00cc66; }
+
+        .metric-info { display: flex; flex-direction: column; gap: 2px; }
+
+        .metric-label {
+            font-size: 11px;
+            color: #666;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .metric-count {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .metric-card.critical .metric-count { color: #ff4444; }
+        .metric-card.high     .metric-count { color: #ff7722; }
+        .metric-card.medium   .metric-count { color: #ffbb22; }
+        .metric-card.low      .metric-count { color: #44dd88; }
+
+        .metric-pct {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            color: #444;
+            text-align: right;
+        }
+
+        /* CHART PANEL */
+        .chart-panel {
+            background: #0f0f18;
+            border: 1px solid #1e1e30;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .chart-panel h3 {
+            font-size: 12px;
+            color: #444;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-family: 'Share Tech Mono', monospace;
+            margin-bottom: 4px;
+        }
+
+        .chart-status {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: #00ff88;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 420px;
+        }
+
+        /* LEGEND */
+        .legend-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 24px;
+            margin-top: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-val { color: #ccc; font-weight: 600; }
+        .legend-pct { color: #555; }
+
+        /* EVENTS TABLE */
+        .events-section h2 {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: #00ff88;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+        }
+
+        th {
+            background: #0f1a0f;
+            color: #00ff88;
+            letter-spacing: 1px;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid #1a3a1a;
+            font-weight: 400;
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid #111;
+            color: #aaa;
+        }
+
+        tr:hover td { background: #0f0f18; }
+
+        .sev-critical { color: #ff4444; font-weight: 700; }
+        .sev-high     { color: #ff7722; }
+        .sev-medium   { color: #ffbb22; }
+        .sev-low      { color: #44dd88; }
+
+        #scan-status { transition: color 0.3s; }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
+<body>
+
+    <div class="dashboard-title">▸ ARGUS DASHBOARD</div>
+    <div class="subtitle">// SECURITY MONITORING SYSTEM</div>
+
+    <hr>
+
+    <div class="status-card">
+        <div class="status-item">VERSION <span>{{ version|default:"1.1.0" }}</span></div>
+        <div class="status-item">STATUS <span id="scan-status">{{ status }}</span></div>
+        <div class="status-item">DETECTORS <span>{{ detectors|default:"7" }}</span></div>
+        <div class="status-item">ACTIVE ALERTS <span>{{ alerts }}</span></div>
+    </div>
+
+    <div class="main-grid">
+
+        <div class="metrics-panel" id="metrics-panel">
+        </div>
+
+        <div class="chart-panel">
+            <h3>// Threat Volume — Real-Time</h3>
+            <div class="chart-status" id="telemetry-status">⬤ CONNECTING...</div>
+            <div class="chart-wrapper">
+                <canvas id="mountainChart"></canvas>
+            </div>
+            <div class="legend-grid" id="legend-grid">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="events-section">
+        <h2>// Recent Events</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>TIME</th>
+                    <th>SOURCE</th>
+                    <th>IP</th>
+                    <th>EVENT</th>
+                    <th>SEVERITY</th>
+                </tr>
+            </thead>
+            <tbody id="recent-events-body">
+         </tbody>
+        </table>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        Chart.register(ChartDataLabels);
+
+        // ── DATOS ESTÁTICOS DEL TEMPLATE (vienen de Django/Flask) ──────
+        // Usamos || para fallback en caso de que la variable venga vacía o como texto
+        function safeNum(val, fallback) {
+            var n = parseInt(val, 10);
+            return isNaN(n) ? fallback : n;
+        }
+
+        const raw = {
+            "Brute Force":          safeNum("{{ brute_force }}", 310),
+            "Port Scan":            safeNum("{{ port_scan }}", 292),
+            "API Abuse":            safeNum("{{ api_abuse }}", 8),
+            "Privilege Escalation": safeNum("{{ privilege_escalation }}", 5),
+            "Multi-IP Login":       safeNum("{{ multi_ip }}", 12),
+            "Ticket Flood":         safeNum("{{ ticket_flood }}", 3)
+        };
+
+        const COLORS = {
+            "Brute Force":          "#ff2222",
+            "Port Scan":            "#ff6600",
+            "API Abuse":            "#ffaa00",
+            "Privilege Escalation": "#ffd700",
+            "Multi-IP Login":       "#00cc66",
+            "Ticket Flood":         "#00ff88"
+        };
+
+        const SEVERITY = {
+            "Brute Force":          "critical",
+            "Port Scan":            "high",
+            "API Abuse":            "medium",
+            "Privilege Escalation": "medium",
+            "Multi-IP Login":       "low",
+            "Ticket Flood":         "low"
+        };
+
+        // Ordenar descendente por valor
+        const sorted = Object.entries(raw).sort((a, b) => b[1] - a[1]);
+        const labels  = sorted.map(e => e[0]);
+        const values  = sorted.map(e => e[1]);
+        const colors  = labels.map(l => COLORS[l]);
+        const total   = values.reduce((a, b) => a + b, 0);
+
+        // ── METRIC CARDS ────────────────────────────────────────────────
+        const panel = document.getElementById("metrics-panel");
+        sorted.forEach(([label, val]) => {
+            const pct = total > 0 ? ((val / total) * 100).toFixed(1) : "0.0";
+            const sev = SEVERITY[label];
+            panel.innerHTML += `
+              <div class="metric-card ${sev}">
+                <div class="metric-info">
+                  <span class="metric-label">${label}</span>
+                  <span class="metric-count">${val}</span>
+                </div>
+                <div class="metric-pct">${pct}%</div>
+              </div>`;
+        });
+
+        // ── LEGEND (única fuente: generada por JS, ya no hardcodeada en el HTML) ──
+        const lgrid = document.getElementById("legend-grid");
+        lgrid.innerHTML = ""; // por seguridad, evita cualquier duplicado si este bloque corre dos veces
+        sorted.forEach(([label, val]) => {
+            const pct = total > 0 ? ((val / total) * 100).toFixed(1) : "0.0";
+            const slug = label.toLowerCase().replace(/\s+/g, '-').replace('multi-ip-login', 'multi-ip').replace('privilege-escalation', 'priv-esc');
+            lgrid.innerHTML += `
+              <div class="legend-item">
+                <div class="legend-dot" style="background:${COLORS[label]}"></div>
+                <span>${label}&nbsp;
+                  <span class="legend-val" id="val-${slug}">${val}</span>
+                  <span class="legend-pct">(${pct}%)</span>
+                </span>
+              </div>`;
+        });
+
+        // ── GRÁFICO DE MONTAÑA (area chart) ─────────────────────────────
+        const ctx = document.getElementById("mountainChart").getContext('2d');
+
+        // Gradiente verde
+        let gradient = ctx.createLinearGradient(0, 0, 0, 380);
+        gradient.addColorStop(0, 'rgba(0, 255, 136, 0.55)');
+        gradient.addColorStop(1, 'rgba(0, 255, 136, 0.00)');
+
+        const mountainChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Volumen de Amenazas',
+                    data: [],
+                    borderColor: '#00ff88',
+                    backgroundColor: gradient,
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#00ff88',
+                    pointHitRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 800 },
+                plugins: {
+                    legend: { display: false },
+                    datalabels: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#1a1a2e' },
+                        ticks: { color: '#666', maxTicksLimit: 10 }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#1a1a2e' },
+                        ticks: { color: '#666' },
+                        suggestedMax: 10 // se ajusta dinámicamente abajo según los datos reales
+                    }
+                }
+            }
+        });
+
+        const MAX_POINTS = 20;
+        const elStatus   = document.getElementById('telemetry-status');
+        const elScan     = document.getElementById('scan-status');
+
+        // ── FETCH REAL-TIME desde Django (/api/metrics/) ──────────────────
+        async function fetchRealTimeData() {
+            try {
+                const response = await fetch('/api/metrics/');
+
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+
+                const data = await response.json();
+
+                // El backend puede mandar el volumen actual en distintas claves
+                // según la vista que lo genere. Probamos varias antes de caer a 0,
+                // que es la causa más común de que el gráfico se vea "plano".
+                let currentVolume = data.current_volume;
+                if (currentVolume === undefined || currentVolume === null) {
+                    currentVolume =
+                        (data.brute_force || 0) +
+                        (data.port_scan || 0) +
+                        (data.api_abuse || 0) +
+                        (data.privilege_escalation || 0) +
+                        (data.multi_ip || 0) +
+                        (data.ticket_flood || 0);
+                }
+                currentVolume = Number(currentVolume) || 0;
+
+                console.log(data.time, currentVolume);
+
+                // Agregar punto al gráfico
+                mountainChart.data.labels.push(data.time);
+                mountainChart.data.datasets[0].data.push(currentVolume);
+
+                // Mantener ventana deslizante de MAX_POINTS
+                if (mountainChart.data.labels.length > MAX_POINTS) {
+                    mountainChart.data.labels.shift();
+                    mountainChart.data.datasets[0].data.shift();
+                }
+
+                // Ajustar el eje Y dinámicamente para que la curva no se vea plana
+                // cuando los valores son pequeños o muy parecidos entre sí.
+                const seriesData = mountainChart.data.datasets[0].data;
+                const maxVal = Math.max(...seriesData, 0);
+                mountainChart.options.scales.y.suggestedMax = maxVal > 0 ? Math.ceil(maxVal * 1.2) : 10;
+
+                mountainChart.update();
+
+                // Actualizar tarjetas de métricas en tiempo real
+                const map = {
+                    'Brute Force':          data.brute_force,
+                    'Port Scan':            data.port_scan,
+                    'API Abuse':            data.api_abuse,
+                    'Privilege Escalation': data.privilege_escalation,
+                    'Multi-IP Login':       data.multi_ip,
+                    'Ticket Flood':         data.ticket_flood
+                };
+                const newTotal = Object.values(map).reduce((a, b) => (a || 0) + (b || 0), 0);
+                document.querySelectorAll('.metric-card').forEach(card => {
+                    const label = card.querySelector('.metric-label').textContent;
+                    if (map[label] !== undefined) {
+                        card.querySelector('.metric-count').textContent = map[label];
+                        const pct = newTotal > 0 ? ((map[label] / newTotal) * 100).toFixed(1) : '0.0';
+                        card.querySelector('.metric-pct').textContent = pct + '%';
+                    }
+                });
+
+                const tbody = document.getElementById('recent-events-body');
+                if (data.recent_events) {
+                    tbody.innerHTML = '';
+                    data.recent_events.forEach(log => {
+                        tbody.insertAdjacentHTML('beforeend', `<tr>
+                            <td>${log.time}</td>
+                            <td>${log.source}</td>
+                            <td>${log.ip}</td>
+                            <td>${log.event}</td>
+                            <td>${log.severity}</td>
+                        </tr>`);
+                    });
+                }
+
+                // Actualizar valores de la leyenda (usa los mismos IDs generados arriba)
+                document.getElementById('val-brute-force').textContent = data.brute_force;
+                document.getElementById('val-port-scan').textContent = data.port_scan;
+                document.getElementById('val-api-abuse').textContent = data.api_abuse;
+                document.getElementById('val-priv-esc').textContent = data.privilege_escalation;
+                document.getElementById('val-multi-ip').textContent = data.multi_ip;
+                document.getElementById('val-ticket-flood').textContent = data.ticket_flood;
+
+                // Indicador de conexión OK
+                elStatus.textContent = '⬤ LIVE — última lectura: ' + data.time;
+                elStatus.style.color = '#00ff88';
+                if (elScan) {
+                    elScan.textContent = 'ONLINE';
+                    elScan.style.color = '#00ff88';
+                }
+
+            } catch (error) {
+                console.error('[Argus] Error obteniendo métricas:', error);
+                elStatus.textContent = '⬤ CONNECTION LOST — reintentando...';
+                elStatus.style.color = '#ff2222';
+                if (elScan) {
+                    elScan.style.color = '#ff2222';
+                }
+            }
+        }
+
+        // ── INICIO: primera llamada + intervalo cada 2s ──────────────────
+        console.log('📊 Argus Dashboard conectado. Iniciando telemetría...');
+        fetchRealTimeData();
+        setInterval(fetchRealTimeData, 2000);
+
+    }); // fin DOMContentLoaded
+    </script>
+</body>
+</html>

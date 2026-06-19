@@ -1,0 +1,28 @@
+<<<<<<< HEAD
+# Python
+__pycache__/
+*.pyc
+
+# Entorno virtual
+venv/
+
+# Variables de entorno (¡Súper importante por seguridad!)
+.env
+=======
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Variables de entorno
+.env
+.env.local
+
+# Caché
+.cache/
+>>>>>>> 87f1543 (ArgusDashboard primera version)
