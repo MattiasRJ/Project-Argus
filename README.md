@@ -26,11 +26,6 @@ Consola de detección y registro de eventos de seguridad. Escribe los eventos de
 
 Django — framework principal, vistas y enrutamiento.
 PostgreSQL — base de datos compartida entre ArgusCore y Argus Dashboard.
-
-
-**Frontend**
-
-
 HTML5 + CSS3 (sin framework de estilos, diseño custom).
 JavaScript vanilla (fetch API, manipulación de DOM).
 Chart.js — gráfico de volumen de amenazas en tiempo real.
