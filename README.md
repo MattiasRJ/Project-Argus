@@ -73,7 +73,6 @@ Endpoints (Argus Dashboard)
 
 RutaDescripción/Renderiza el dashboard (dashboard.html)./api/metrics/Devuelve métricas en tiempo real en formato JSON: volumen reciente, contadores por tipo de amenaza y últimos eventos.
 
---------------------------------------------------------------------------------------------------
 
 ## Notas de la versión 1.1.0
 
