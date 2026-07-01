@@ -32,6 +32,7 @@ Chart.js — gráfico de volumen de amenazas en tiempo real.
 chartjs-plugin-datalabels — soporte de etiquetas en el gráfico.
 Tipografías Share Tech Mono y Rajdhani (Google Fonts).
 
+--------------------------------------------------------------------------------------------------
 
 ## Arquitectura de Argus
 
@@ -71,6 +72,8 @@ ArgusCore (la consola) detecta y registra los eventos de seguridad directamente 
 Endpoints (Argus Dashboard)
 
 RutaDescripción/Renderiza el dashboard (dashboard.html)./api/metrics/Devuelve métricas en tiempo real en formato JSON: volumen reciente, contadores por tipo de amenaza y últimos eventos.
+
+--------------------------------------------------------------------------------------------------
 
 ## Notas de la versión 1.1.0
 
