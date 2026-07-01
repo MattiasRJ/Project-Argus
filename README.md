@@ -60,11 +60,6 @@ Tipografías Share Tech Mono y Rajdhani (Google Fonts).
          ▼
 ┌──────────────────┐
 │ Argus Dashboard  │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│   SOC Analyst    │
 └──────────────────┘
 ```
 ArgusCore (la consola) detecta y registra los eventos de seguridad directamente en la tabla logs. La vista metrics_api consulta esa misma tabla, calcula contadores por tipo de evento, arma los últimos 5 eventos para la tabla de "Recent Events" y devuelve todo como JSON. El frontend de Argus Dashboard consume ese JSON cada 2 segundos para refrescar tarjetas, gráfico y tabla sin recargar la página.
