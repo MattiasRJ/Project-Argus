@@ -33,8 +33,9 @@ chartjs-plugin-datalabels — soporte de etiquetas en el gráfico.
 Tipografías Share Tech Mono y Rajdhani (Google Fonts).
 
 
-Arquitectura de Argus
+## Arquitectura de Argus
 
+```text
 ┌──────────────────┐
 │  ArgusCore       │
 │   (Consola)      │
@@ -64,7 +65,7 @@ Arquitectura de Argus
 ┌──────────────────┐
 │   SOC Analyst    │
 └──────────────────┘
-
+```
 ArgusCore (la consola) detecta y registra los eventos de seguridad directamente en la tabla logs. La vista metrics_api consulta esa misma tabla, calcula contadores por tipo de evento, arma los últimos 5 eventos para la tabla de "Recent Events" y devuelve todo como JSON. El frontend de Argus Dashboard consume ese JSON cada 2 segundos para refrescar tarjetas, gráfico y tabla sin recargar la página.
 
 Endpoints (Argus Dashboard)
