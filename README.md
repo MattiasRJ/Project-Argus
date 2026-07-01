@@ -33,21 +33,37 @@ chartjs-plugin-datalabels — soporte de etiquetas en el gráfico.
 Tipografías Share Tech Mono y Rajdhani (Google Fonts).
 
 
-**Arquitectura**
+Arquitectura de Argus
 
-ArgusCore (consola)
-   │
-   │  escribe eventos
-   ▼
-Tabla "logs" (PostgreSQL)
-   ▲
-   │  consultas ORM
-   │
-/api/metrics/  (vista Django: metrics_api)
-   ▲
-   │  fetch cada 2s
-   │
-Cliente (dashboard.html)
+┌──────────────────┐
+│  ArgusCore       │
+│   (Consola)      │
+└────────┬─────────┘
+         │
+         │ Escribe eventos
+         ▼
+┌──────────────────┐
+│ PostgreSQL       │
+│ Tabla: logs      │
+└────────┬─────────┘
+         │
+         │ Consultas ORM
+         ▼
+┌──────────────────┐
+│ Django API       │
+│ /api/metrics/    │
+└────────┬─────────┘
+         │
+         │ Fetch cada 2s
+         ▼
+┌──────────────────┐
+│ Argus Dashboard  │
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│   SOC Analyst    │
+└──────────────────┘
 
 ArgusCore (la consola) detecta y registra los eventos de seguridad directamente en la tabla logs. La vista metrics_api consulta esa misma tabla, calcula contadores por tipo de evento, arma los últimos 5 eventos para la tabla de "Recent Events" y devuelve todo como JSON. El frontend de Argus Dashboard consume ese JSON cada 2 segundos para refrescar tarjetas, gráfico y tabla sin recargar la página.
 
